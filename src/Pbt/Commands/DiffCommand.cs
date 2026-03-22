@@ -140,7 +140,7 @@ public static class DiffCommand
         {
             if (!tablesB.ContainsKey(name))
             {
-                changes.Add(new DiffChange("table_removed", name, null, null, isBreaking: true));
+                changes.Add(new DiffChange("table_removed", name, null, null, IsBreaking: true));
             }
         }
 
@@ -149,7 +149,7 @@ public static class DiffCommand
         {
             if (!tablesA.ContainsKey(name))
             {
-                changes.Add(new DiffChange("table_added", name, null, null, isBreaking: false));
+                changes.Add(new DiffChange("table_added", name, null, null, IsBreaking: false));
             }
         }
 
@@ -166,7 +166,7 @@ public static class DiffCommand
             {
                 if (!colsB.ContainsKey(colName))
                 {
-                    changes.Add(new DiffChange("column_removed", $"{name}.{colName}", null, null, isBreaking: true));
+                    changes.Add(new DiffChange("column_removed", $"{name}.{colName}", null, null, IsBreaking: true));
                 }
             }
 
@@ -174,19 +174,19 @@ public static class DiffCommand
             {
                 if (!colsA.TryGetValue(colName, out var colA))
                 {
-                    changes.Add(new DiffChange("column_added", $"{name}.{colName}", null, colB.Type, isBreaking: false));
+                    changes.Add(new DiffChange("column_added", $"{name}.{colName}", null, colB.Type, IsBreaking: false));
                 }
                 else if (!colA.Type.Equals(colB.Type, StringComparison.OrdinalIgnoreCase))
                 {
-                    changes.Add(new DiffChange("column_type_changed", $"{name}.{colName}", colA.Type, colB.Type, isBreaking: true));
+                    changes.Add(new DiffChange("column_type_changed", $"{name}.{colName}", colA.Type, colB.Type, IsBreaking: true));
                 }
                 else
                 {
                     // Non-breaking column changes
                     if (colA.Description != colB.Description)
-                        changes.Add(new DiffChange("column_description_changed", $"{name}.{colName}", colA.Description, colB.Description, isBreaking: false));
+                        changes.Add(new DiffChange("column_description_changed", $"{name}.{colName}", colA.Description, colB.Description, IsBreaking: false));
                     if (colA.FormatString != colB.FormatString)
-                        changes.Add(new DiffChange("column_format_changed", $"{name}.{colName}", colA.FormatString, colB.FormatString, isBreaking: false));
+                        changes.Add(new DiffChange("column_format_changed", $"{name}.{colName}", colA.FormatString, colB.FormatString, IsBreaking: false));
                 }
             }
 
@@ -197,15 +197,15 @@ public static class DiffCommand
             foreach (var (measName, _) in measA)
             {
                 if (!measB.ContainsKey(measName))
-                    changes.Add(new DiffChange("measure_removed", $"{name}.[{measName}]", null, null, isBreaking: true));
+                    changes.Add(new DiffChange("measure_removed", $"{name}.[{measName}]", null, null, IsBreaking: true));
             }
 
             foreach (var (measName, measBDef) in measB)
             {
                 if (!measA.ContainsKey(measName))
-                    changes.Add(new DiffChange("measure_added", $"{name}.[{measName}]", null, null, isBreaking: false));
+                    changes.Add(new DiffChange("measure_added", $"{name}.[{measName}]", null, null, IsBreaking: false));
                 else if (measA[measName].Expression != measBDef.Expression)
-                    changes.Add(new DiffChange("measure_expression_changed", $"{name}.[{measName}]", null, null, isBreaking: false));
+                    changes.Add(new DiffChange("measure_expression_changed", $"{name}.[{measName}]", null, null, IsBreaking: false));
             }
         }
     }
@@ -218,14 +218,14 @@ public static class DiffCommand
         foreach (var (name, _) in modelsA)
         {
             if (!modelsB.ContainsKey(name))
-                changes.Add(new DiffChange("model_removed", name, null, null, isBreaking: true));
+                changes.Add(new DiffChange("model_removed", name, null, null, IsBreaking: true));
         }
 
         foreach (var (name, modelB) in modelsB)
         {
             if (!modelsA.ContainsKey(name))
             {
-                changes.Add(new DiffChange("model_added", name, null, null, isBreaking: false));
+                changes.Add(new DiffChange("model_added", name, null, null, IsBreaking: false));
                 continue;
             }
 
@@ -236,10 +236,10 @@ public static class DiffCommand
             var relsB = new HashSet<string>(modelB.Relationships.Select(r => $"{r.FromTable}.{r.FromColumn}->{r.ToTable}.{r.ToColumn}"));
 
             foreach (var rel in relsA.Except(relsB))
-                changes.Add(new DiffChange("relationship_removed", $"{name}: {rel}", null, null, isBreaking: true));
+                changes.Add(new DiffChange("relationship_removed", $"{name}: {rel}", null, null, IsBreaking: true));
 
             foreach (var rel in relsB.Except(relsA))
-                changes.Add(new DiffChange("relationship_added", $"{name}: {rel}", null, null, isBreaking: false));
+                changes.Add(new DiffChange("relationship_added", $"{name}: {rel}", null, null, IsBreaking: false));
         }
     }
 
@@ -307,5 +307,5 @@ public static class DiffCommand
         }));
     }
 
-    private record DiffChange(string ChangeType, string ObjectPath, string? OldValue, string? NewValue, bool IsBreaking);
+    private record DiffChange(string ChangeType, string ObjectPath, string? OldValue, string? NewValue, bool IsBreaking = false);
 }
