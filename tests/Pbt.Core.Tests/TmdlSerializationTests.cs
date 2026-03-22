@@ -31,18 +31,20 @@ public class TmdlSerializationTests
 
         try
         {
-            // Load table registry
+            // Load project, table registry and model
+            var projectYaml = Path.Combine(exampleProjectPath, "project.yml");
+            var project = _serializer.LoadFromFile<ProjectDefinition>(projectYaml);
+
             var tablesPath = Path.Combine(exampleProjectPath, "tables");
             var registry = new TableRegistry(_serializer);
             registry.LoadTables(tablesPath);
 
-            // Load model definition
             var modelPath = Path.Combine(exampleProjectPath, "models", "sales_model.yaml");
             var modelDef = _serializer.LoadFromFile<ModelDefinition>(modelPath);
 
             // Compose model
             var composer = new ModelComposer(registry);
-            var database = composer.ComposeModel(modelDef, 1600);
+            var database = composer.ComposeModel(modelDef, 1600, project: project, projectRootPath: exampleProjectPath);
 
             // Act - Serialize to TMDL
             TmdlSerializer.SerializeDatabaseToFolder(database, outputPath);
@@ -56,6 +58,7 @@ public class TmdlSerializationTests
             Assert.True(Directory.Exists(tablesDir), "tables directory should exist");
             Assert.True(File.Exists(Path.Combine(tablesDir, "Sales.tmdl")), "Sales.tmdl should exist");
             Assert.True(File.Exists(Path.Combine(tablesDir, "Customers.tmdl")), "Customers.tmdl should exist");
+            Assert.True(File.Exists(Path.Combine(tablesDir, "DateDim.tmdl")), "DateDim.tmdl should exist");
 
             // Assert - Database TMDL content
             var databaseTmdl = File.ReadAllText(Path.Combine(outputPath, "database.tmdl"));
@@ -75,14 +78,19 @@ public class TmdlSerializationTests
             Assert.Contains("column OrderDate", salesTmdl);
             Assert.Contains("column Amount", salesTmdl);
             Assert.Contains("column CustomerID", salesTmdl);
+            Assert.Contains("column IsLargeOrder", salesTmdl); // Calculated column
 
             // Assert - Customers table TMDL content
             var customersTmdl = File.ReadAllText(Path.Combine(tablesDir, "Customers.tmdl"));
             Assert.Contains("table Customers", customersTmdl);
             Assert.Contains("column CustomerID", customersTmdl);
             Assert.Contains("column CustomerName", customersTmdl);
+            Assert.Contains("hierarchy Geography", customersTmdl); // Hierarchy
 
-            // Assert - Relationships exist (they are in the model, verified by deserialize test)
+            // Assert - DateDim table TMDL content
+            var dateDimTmdl = File.ReadAllText(Path.Combine(tablesDir, "DateDim.tmdl"));
+            Assert.Contains("table DateDim", dateDimTmdl);
+            Assert.Contains("column MonthName", dateDimTmdl);
         }
         finally
         {
@@ -115,7 +123,10 @@ public class TmdlSerializationTests
 
         try
         {
-            // Load and compose original model
+            // Load project, tables and compose original model
+            var projectYaml = Path.Combine(exampleProjectPath, "project.yml");
+            var project = _serializer.LoadFromFile<ProjectDefinition>(projectYaml);
+
             var tablesPath = Path.Combine(exampleProjectPath, "tables");
             var registry = new TableRegistry(_serializer);
             registry.LoadTables(tablesPath);
@@ -124,7 +135,7 @@ public class TmdlSerializationTests
             var modelDef = _serializer.LoadFromFile<ModelDefinition>(modelPath);
 
             var composer = new ModelComposer(registry);
-            var originalDatabase = composer.ComposeModel(modelDef, 1600);
+            var originalDatabase = composer.ComposeModel(modelDef, 1600, project: project, projectRootPath: exampleProjectPath);
 
             // Serialize to TMDL
             TmdlSerializer.SerializeDatabaseToFolder(originalDatabase, outputPath);
