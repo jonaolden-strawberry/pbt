@@ -1,0 +1,39 @@
+name: Customers
+description: Customer dimension table
+m_expression: |
+  let
+    Source = #table(
+      {"CustomerID", "CustomerName", "City", "Country"},
+      {
+        {101, "Acme Corp", "New York", "USA"},
+        {102, "Tech Solutions", "London", "UK"},
+        {103, "Global Industries", "Tokyo", "Japan"}
+      }
+    )
+  in
+    Source
+
+columns:
+  - name: CustomerID
+    type: Int64
+    source_column: CustomerID
+    description: Unique customer identifier
+    is_key: true
+    summarize_by: None
+
+  - name: CustomerName
+    type: String
+    source_column: CustomerName
+    description: Customer company name
+
+  - name: City
+    type: String
+    source_column: City
+    description: Customer city
+    data_category: City
+
+  - name: Country
+    type: String
+    source_column: Country
+    description: Customer country
+    data_category: Country

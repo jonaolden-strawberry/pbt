@@ -1,0 +1,42 @@
+name: Sales
+description: Sales fact table tracking customer orders
+m_expression: |
+  let
+    Source = #table(
+      {"OrderID", "OrderDate", "Amount", "CustomerID"},
+      {
+        {1, #date(2024, 1, 15), 1500.00, 101},
+        {2, #date(2024, 2, 20), 2300.50, 102},
+        {3, #date(2024, 3, 10), 950.75, 101},
+        {4, #date(2024, 4, 5), 3100.00, 103},
+        {5, #date(2024, 5, 18), 475.25, 102}
+      }
+    )
+  in
+    Source
+
+columns:
+  - name: OrderID
+    type: Int64
+    source_column: OrderID
+    description: Unique order identifier
+    is_key: true
+    summarize_by: None
+
+  - name: OrderDate
+    type: DateTime
+    source_column: OrderDate
+    description: Date the order was placed
+
+  - name: Amount
+    type: Decimal
+    source_column: Amount
+    description: Total order amount
+    format_string: "$#,##0.00"
+    summarize_by: Sum
+
+  - name: CustomerID
+    type: Int64
+    source_column: CustomerID
+    description: Foreign key to Customers table
+    summarize_by: None
