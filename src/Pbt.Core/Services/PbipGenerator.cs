@@ -95,27 +95,28 @@ public static class PbipGenerator
         // 6. Generate <name>.Report/definition/ content (PBIR enhanced format)
         //    Uses individual page/visual files instead of a monolithic report.json
 
-        // 6a. report.json — minimal required structure with theme and dataset binding
-        var reportJsonContent = new
+        // 6a. report.json — minimal required structure with schema, theme, and dataset binding
+        var reportJsonObj = new Dictionary<string, object>
         {
-            themeCollection = new
+            ["$schema"] = "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.0.0/schema.json",
+            ["themeCollection"] = new Dictionary<string, object>
             {
-                baseTheme = new
+                ["baseTheme"] = new Dictionary<string, object>
                 {
-                    name = "CY24SU06",
-                    reportVersionAtImport = "5.50",
-                    type = "SharedResources"
+                    ["name"] = "CY24SU06",
+                    ["reportVersionAtImport"] = "5.50",
+                    ["type"] = "SharedResources"
                 }
             },
-            datasetBinding = new
+            ["datasetBinding"] = new Dictionary<string, object>
             {
-                datasetReference = new
+                ["datasetReference"] = new Dictionary<string, object>
                 {
-                    targetType = 1
+                    ["targetType"] = 1
                 }
             }
         };
-        File.WriteAllText(Path.Combine(reportDefinitionPath, "report.json"), System.Text.Json.JsonSerializer.Serialize(reportJsonContent, jsonOptions));
+        File.WriteAllText(Path.Combine(reportDefinitionPath, "report.json"), System.Text.Json.JsonSerializer.Serialize(reportJsonObj, jsonOptions));
 
         // 6b. Create a default blank page
         var pageDir = Path.Combine(reportDefinitionPath, "pages", "ReportSection");
