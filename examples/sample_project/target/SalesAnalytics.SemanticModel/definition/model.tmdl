@@ -1,0 +1,16 @@
+model SalesAnalytics
+	culture: en-US
+	discourageImplicitMeasures
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+ref table Sales
+ref table Customers
+ref table DateDim
+ref table 'Time Intelligence'
+ref table 'Sales Metric'
+
+ref role RegionManager
+
+ref perspective 'Sales Overview'
+
