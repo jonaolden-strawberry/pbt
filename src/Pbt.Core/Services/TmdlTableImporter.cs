@@ -4,7 +4,7 @@ using Pbt.Core.Models;
 
 namespace Pbt.Core.Services;
 
-public class TmdlTableImporter
+public sealed class TmdlTableImporter
 {
     private readonly YamlSerializer _serializer;
 

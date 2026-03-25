@@ -66,6 +66,11 @@ public class AssetPathConfig
     /// Path to models directory
     /// </summary>
     public string? Models { get; set; }
+
+    /// <summary>
+    /// Path to macros directory
+    /// </summary>
+    public string? Macros { get; set; }
 }
 
 /// <summary>

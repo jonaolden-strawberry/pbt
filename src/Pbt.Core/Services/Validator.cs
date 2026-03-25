@@ -8,7 +8,7 @@ namespace Pbt.Core.Services;
 /// <summary>
 /// Validates PBI Composer projects using structural checks and TOM validation
 /// </summary>
-public class Validator
+public sealed class Validator
 {
     private readonly YamlSerializer _serializer;
 
@@ -143,8 +143,7 @@ public class Validator
 
             var assetPaths = assetLoader.ResolveAssetPaths(model, projectPath);
             var modelResult = ValidateProjectWithAssets(model, modelFile, assetPaths);
-            foreach (var error in modelResult.Errors) result.Errors.Add(error);
-            foreach (var warning in modelResult.Warnings) result.Warnings.Add(warning);
+            result.Merge(modelResult);
         }
 
         return result;

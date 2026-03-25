@@ -6,7 +6,7 @@ namespace Pbt.Core.Services;
 /// <summary>
 /// Composes TOM Database objects from model definitions
 /// </summary>
-public class ModelComposer
+public sealed class ModelComposer
 {
     private readonly TableRegistry _tableRegistry;
     private LineageManifestService? _lineageService;
