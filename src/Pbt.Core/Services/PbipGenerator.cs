@@ -92,14 +92,45 @@ public static class PbipGenerator
         };
         File.WriteAllText(Path.Combine(reportPath, "definition.pbir"), System.Text.Json.JsonSerializer.Serialize(pbirContent, jsonOptions));
 
-        // 6. Generate <name>.Report/definition/report.json
-        var reportJson = new PbirReportDefinition
-        {
-            Schema = "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.0.0/schema.json"
-        };
-        File.WriteAllText(Path.Combine(reportDefinitionPath, "report.json"), System.Text.Json.JsonSerializer.Serialize(reportJson, jsonOptions));
+        // 6. Generate <name>.Report/definition/ content (PBIR enhanced format)
+        //    Uses individual page/visual files instead of a monolithic report.json
 
-        // 7. Generate <name>.Report/definition/version.json
+        // 6a. report.json — minimal required structure with theme and dataset binding
+        var reportJsonContent = new
+        {
+            themeCollection = new
+            {
+                baseTheme = new
+                {
+                    name = "CY24SU06",
+                    reportVersionAtImport = "5.50",
+                    type = "SharedResources"
+                }
+            },
+            datasetBinding = new
+            {
+                datasetReference = new
+                {
+                    targetType = 1
+                }
+            }
+        };
+        File.WriteAllText(Path.Combine(reportDefinitionPath, "report.json"), System.Text.Json.JsonSerializer.Serialize(reportJsonContent, jsonOptions));
+
+        // 6b. Create a default blank page
+        var pageDir = Path.Combine(reportDefinitionPath, "pages", "ReportSection");
+        Directory.CreateDirectory(pageDir);
+
+        var pageJsonContent = new
+        {
+            displayName = "Page 1",
+            displayOption = 0,
+            height = 720.00,
+            width = 1280.00
+        };
+        File.WriteAllText(Path.Combine(pageDir, "page.json"), System.Text.Json.JsonSerializer.Serialize(pageJsonContent, jsonOptions));
+
+        // 6c. version.json
         var versionJson = new PbirVersionDefinition
         {
             Schema = "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/versionMetadata/1.0.0/schema.json",
@@ -309,6 +340,42 @@ public static class PbipGenerator
     {
         [JsonPropertyName("$schema")]
         public string Schema { get; set; } = string.Empty;
+
+        [JsonPropertyName("themeCollection")]
+        public ReportThemeCollection ThemeCollection { get; set; } = new();
+
+        [JsonPropertyName("datasetBinding")]
+        public ReportDatasetBinding DatasetBinding { get; set; } = new();
+    }
+
+    private class ReportThemeCollection
+    {
+        [JsonPropertyName("baseTheme")]
+        public ReportTheme BaseTheme { get; set; } = new();
+    }
+
+    private class ReportTheme
+    {
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = "CY24SU06";
+
+        [JsonPropertyName("reportVersionAtImport")]
+        public string ReportVersionAtImport { get; set; } = "5.50";
+
+        [JsonPropertyName("type")]
+        public string Type { get; set; } = "SharedResources";
+    }
+
+    private class ReportDatasetBinding
+    {
+        [JsonPropertyName("datasetReference")]
+        public ReportDatasetReference DatasetReference { get; set; } = new();
+    }
+
+    private class ReportDatasetReference
+    {
+        [JsonPropertyName("targetType")]
+        public int TargetType { get; set; } = 1;
     }
 
     private class PbirVersionDefinition
