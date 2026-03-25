@@ -95,7 +95,10 @@ public static class PbipGenerator
         // 6. Generate <name>.Report/definition/ content (PBIR enhanced format)
         //    Uses individual page/visual files instead of a monolithic report.json
 
-        // 6a. report.json — minimal required structure with schema, theme, and dataset binding
+        // 6a. report.json — minimal valid structure per schema 3.0.0
+        //     Required: $schema, themeCollection (with baseTheme containing name, reportVersionAtImport object, type)
+        //     reportVersionAtImport is an object with visual/page/report version strings, NOT a plain string
+        //     datasetBinding is NOT allowed by the schema (additionalProperties: false)
         var reportJsonObj = new Dictionary<string, object>
         {
             ["$schema"] = "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.0.0/schema.json",
@@ -104,15 +107,13 @@ public static class PbipGenerator
                 ["baseTheme"] = new Dictionary<string, object>
                 {
                     ["name"] = "CY24SU06",
-                    ["reportVersionAtImport"] = "5.50",
+                    ["reportVersionAtImport"] = new Dictionary<string, object>
+                    {
+                        ["visual"] = "5.50.0",
+                        ["page"] = "5.50.0",
+                        ["report"] = "5.50.0"
+                    },
                     ["type"] = "SharedResources"
-                }
-            },
-            ["datasetBinding"] = new Dictionary<string, object>
-            {
-                ["datasetReference"] = new Dictionary<string, object>
-                {
-                    ["targetType"] = 1
                 }
             }
         };
