@@ -66,6 +66,14 @@ public sealed class ModelComposer
 
         var model = database.Model;
         model.DiscourageImplicitMeasures = modelDef.DiscourageImplicitMeasures;
+        model.Culture = modelDef.Culture;
+
+        // Disable auto time intelligence by default (annotation __PBI_TimeIntelligenceEnabled)
+        model.Annotations.Add(new Annotation
+        {
+            Name = "__PBI_TimeIntelligenceEnabled",
+            Value = modelDef.AutoTimeIntelligence ? "1" : "0"
+        });
 
         // 1. Add tables
         foreach (var tableRef in modelDef.Tables)

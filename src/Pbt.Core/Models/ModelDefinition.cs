@@ -29,6 +29,19 @@ public class ModelDefinition
     public bool DiscourageImplicitMeasures { get; set; } = true;
 
     /// <summary>
+    /// Culture/locale for the model (e.g., "en-US").
+    /// Defaults to "en-US" if not specified.
+    /// </summary>
+    public string Culture { get; set; } = "en-US";
+
+    /// <summary>
+    /// When true, Power BI auto-generates time intelligence for date columns.
+    /// Defaults to false (disabled) to avoid unwanted auto-generated date hierarchies.
+    /// Set to true in model YAML to enable.
+    /// </summary>
+    public bool AutoTimeIntelligence { get; set; } = false;
+
+    /// <summary>
     /// Format strings applied to columns by data type when no explicit format_string is set.
     /// Maps type names (e.g., "int64", "decimal", "dateTime") to format strings.
     /// </summary>
