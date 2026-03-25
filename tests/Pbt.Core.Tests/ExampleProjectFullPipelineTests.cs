@@ -16,7 +16,7 @@ public class ExampleProjectFullPipelineTests
     private readonly YamlSerializer _serializer = new();
 
     /// <summary>
-    /// Full pipeline: load project via AssetLoader, validate, compose with lineage,
+    /// Full pipeline: load model via AssetLoader, validate, compose with lineage,
     /// serialize to TMDL, deserialize back, and validate the round-tripped model.
     /// </summary>
     [Fact]
@@ -33,47 +33,44 @@ public class ExampleProjectFullPipelineTests
 
         try
         {
-            // ── 1. Load project via AssetLoader ──
+            // ── 1. Load model and resolve asset paths ──
             var assetLoader = new AssetLoader(_serializer);
-            var (project, assetPaths) = assetLoader.LoadProject(exampleProjectPath);
+            var modelFiles = assetLoader.FindModelFiles(exampleProjectPath);
+            Assert.Single(modelFiles);
 
-            Assert.Equal("SampleProject", project.Name);
-            Assert.Equal(1600, project.CompatibilityLevel);
+            var modelDef = _serializer.LoadFromFile<ModelDefinition>(modelFiles[0]);
+            Assert.Equal("SalesAnalytics", modelDef.Name);
+            Assert.Equal(1600, modelDef.CompatibilityLevel);
+
+            var assetPaths = assetLoader.ResolveAssetPaths(modelDef, exampleProjectPath);
             Assert.True(assetPaths.TablePaths.Count > 0, "Should have table paths");
-            Assert.True(assetPaths.ModelPaths.Count > 0, "Should have model paths");
 
             // ── 2. Validate project ──
             var validator = new Validator(_serializer);
-            var validationResult = validator.ValidateProjectWithAssets(exampleProjectPath, assetPaths);
+            var validationResult = validator.ValidateProject(exampleProjectPath);
             Assert.True(validationResult.IsValid, $"Validation failed: {validationResult.FormatMessages()}");
 
             // ── 3. Load table registry ──
             var registry = assetLoader.CreateTableRegistry(assetPaths);
             Assert.Equal(3, registry.Count);
 
-            // ── 4. Load model files ──
-            var modelFiles = assetLoader.GetModelFiles(assetPaths);
-            Assert.Single(modelFiles);
-            var modelDef = _serializer.LoadFromFile<ModelDefinition>(modelFiles[0]);
-            Assert.Equal("SalesAnalytics", modelDef.Name);
-
-            // ── 5. Setup lineage service ──
+            // ── 4. Setup lineage service ──
             var lineageService = new LineageManifestService(_serializer);
             lineageService.LoadManifest(exampleProjectPath);
 
-            // ── 6. Compose TOM Database ──
+            // ── 5. Compose TOM Database ──
             var composer = new ModelComposer(registry);
             var database = composer.ComposeModel(
-                modelDef, project.CompatibilityLevel, lineageService, project, exampleProjectPath);
+                modelDef, lineageService, exampleProjectPath);
 
             Assert.NotNull(database);
             Assert.NotNull(database.Model);
 
-            // ── 7. Validate TOM model ──
+            // ── 6. Validate TOM model ──
             var tomValidation = validator.ValidateTomModel(database, modelDef.Name);
             Assert.True(tomValidation.IsValid, $"TOM validation failed: {tomValidation.FormatMessages()}");
 
-            // ── 8. Assert full model structure ──
+            // ── 7. Assert full model structure ──
             var model = database.Model;
 
             // 3 regular tables + Time Intelligence calc group + Sales Metric field param = 5
@@ -126,14 +123,14 @@ public class ExampleProjectFullPipelineTests
             var fieldParam = model.Tables.Find("Sales Metric")!;
             Assert.Contains(fieldParam.Annotations, a => a.Name == "ParameterMetadata");
 
-            // Shared expressions (project-level ServerName + model-level DatabaseName)
-            Assert.True(model.Expressions.Count >= 2);
+            // Shared expressions (model-level DatabaseName)
+            Assert.True(model.Expressions.Count >= 1);
 
             // Lineage: all objects should have tags
             Assert.Empty(lineageService.CollisionWarnings);
             AssertAllLineageTags(model);
 
-            // ── 9. Serialize to TMDL ──
+            // ── 8. Serialize to TMDL ──
             TmdlSerializer.SerializeDatabaseToFolder(database, tmdlOutputPath);
 
             Assert.True(File.Exists(Path.Combine(tmdlOutputPath, "database.tmdl")));
@@ -149,7 +146,7 @@ public class ExampleProjectFullPipelineTests
             var customersTmdl = File.ReadAllText(Path.Combine(tmdlOutputPath, "tables", "Customers.tmdl"));
             Assert.Contains("hierarchy Geography", customersTmdl);
 
-            // ── 10. Deserialize from TMDL (round-trip) ──
+            // ── 9. Deserialize from TMDL (round-trip) ──
             var deserializedDb = TmdlSerializer.DeserializeDatabaseFromFolder(tmdlOutputPath);
 
             Assert.Equal(database.Name, deserializedDb.Name);
@@ -159,12 +156,12 @@ public class ExampleProjectFullPipelineTests
             Assert.Equal(database.Model.Perspectives.Count, deserializedDb.Model.Perspectives.Count);
             Assert.Equal(database.Model.Roles.Count, deserializedDb.Model.Roles.Count);
 
-            // ── 11. Validate deserialized TOM model ──
+            // ── 10. Validate deserialized TOM model ──
             var deserializedValidation = validator.ValidateTomModel(deserializedDb, modelDef.Name);
             Assert.True(deserializedValidation.IsValid,
                 $"Deserialized TOM validation failed: {deserializedValidation.FormatMessages()}");
 
-            // ── 12. Verify round-trip fidelity per table ──
+            // ── 11. Verify round-trip fidelity per table ──
             foreach (var origTable in database.Model.Tables)
             {
                 var deserTable = deserializedDb.Model.Tables.Find(origTable.Name);
@@ -211,10 +208,7 @@ public class ExampleProjectFullPipelineTests
         var exampleProjectPath = Path.Combine(projectRoot, "examples", "sample_project");
         if (!Directory.Exists(exampleProjectPath)) return;
 
-        // Load project and model
-        var project = _serializer.LoadFromFile<ProjectDefinition>(
-            Path.Combine(exampleProjectPath, "project.yml"));
-
+        // Load model and tables
         var registry = new TableRegistry(_serializer);
         registry.LoadTables(Path.Combine(exampleProjectPath, "tables"));
 
@@ -229,14 +223,9 @@ public class ExampleProjectFullPipelineTests
         // Compose with environment
         var composer = new ModelComposer(registry);
         var database = composer.ComposeModel(
-            modelDef, project.CompatibilityLevel, project: project,
-            projectRootPath: exampleProjectPath, environment: envDef);
+            modelDef, projectRootPath: exampleProjectPath, environment: envDef);
 
         // Verify environment overrides applied
-        var serverNameExpr = database.Model.Expressions.Find("ServerName");
-        Assert.NotNull(serverNameExpr);
-        Assert.Contains("dev-server.example.com", serverNameExpr.Expression);
-
         var dbNameExpr = database.Model.Expressions.Find("DatabaseName");
         Assert.NotNull(dbNameExpr);
         Assert.Contains("DevSalesDB", dbNameExpr.Expression);
@@ -265,9 +254,6 @@ public class ExampleProjectFullPipelineTests
 
         try
         {
-            var project = _serializer.LoadFromFile<ProjectDefinition>(
-                Path.Combine(exampleProjectPath, "project.yml"));
-
             var registry = new TableRegistry(_serializer);
             registry.LoadTables(Path.Combine(exampleProjectPath, "tables"));
 
@@ -276,13 +262,13 @@ public class ExampleProjectFullPipelineTests
 
             var composer = new ModelComposer(registry);
             var database = composer.ComposeModel(
-                modelDef, project.CompatibilityLevel, project: project, projectRootPath: exampleProjectPath);
+                modelDef, projectRootPath: exampleProjectPath);
 
             // Generate PBIP
-            PbipGenerator.GeneratePbipStructure(database, project.Name, targetPath);
+            PbipGenerator.GeneratePbipStructure(database, modelDef.Name, targetPath);
 
             // Verify PBIP structure
-            var sanitizedName = FileNameSanitizer.Sanitize(project.Name);
+            var sanitizedName = FileNameSanitizer.Sanitize(modelDef.Name);
             Assert.True(File.Exists(Path.Combine(targetPath, $"{sanitizedName}.pbip")));
             Assert.True(Directory.Exists(Path.Combine(targetPath, $"{sanitizedName}.SemanticModel")));
             Assert.True(Directory.Exists(Path.Combine(targetPath, $"{sanitizedName}.Report")));
@@ -323,8 +309,6 @@ public class ExampleProjectFullPipelineTests
 
         try
         {
-            var project = _serializer.LoadFromFile<ProjectDefinition>(
-                Path.Combine(tempProject, "project.yml"));
             var registry = new TableRegistry(_serializer);
             registry.LoadTables(Path.Combine(tempProject, "tables"));
             var modelDef = _serializer.LoadFromFile<ModelDefinition>(
@@ -335,7 +319,7 @@ public class ExampleProjectFullPipelineTests
             lineageService1.LoadManifest(tempProject);
             var composer = new ModelComposer(registry);
             var db1 = composer.ComposeModel(
-                modelDef, project.CompatibilityLevel, lineageService1, project, tempProject);
+                modelDef, lineageService1, tempProject);
             lineageService1.SaveManifest(tempProject);
 
             Assert.True(lineageService1.NewTagCount > 0, "First build should generate new tags");
@@ -344,7 +328,7 @@ public class ExampleProjectFullPipelineTests
             var lineageService2 = new LineageManifestService(_serializer);
             lineageService2.LoadManifest(tempProject);
             var db2 = composer.ComposeModel(
-                modelDef, project.CompatibilityLevel, lineageService2, project, tempProject);
+                modelDef, lineageService2, tempProject);
 
             Assert.Equal(0, lineageService2.NewTagCount);
             Assert.True(lineageService2.ExistingTagCount > 0, "Second build should reuse all tags");

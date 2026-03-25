@@ -31,10 +31,7 @@ public class TmdlSerializationTests
 
         try
         {
-            // Load project, table registry and model
-            var projectYaml = Path.Combine(exampleProjectPath, "project.yml");
-            var project = _serializer.LoadFromFile<ProjectDefinition>(projectYaml);
-
+            // Load table registry and model
             var tablesPath = Path.Combine(exampleProjectPath, "tables");
             var registry = new TableRegistry(_serializer);
             registry.LoadTables(tablesPath);
@@ -44,7 +41,7 @@ public class TmdlSerializationTests
 
             // Compose model
             var composer = new ModelComposer(registry);
-            var database = composer.ComposeModel(modelDef, 1600, project: project, projectRootPath: exampleProjectPath);
+            var database = composer.ComposeModel(modelDef, projectRootPath: exampleProjectPath);
 
             // Act - Serialize to TMDL
             TmdlSerializer.SerializeDatabaseToFolder(database, outputPath);
@@ -123,10 +120,7 @@ public class TmdlSerializationTests
 
         try
         {
-            // Load project, tables and compose original model
-            var projectYaml = Path.Combine(exampleProjectPath, "project.yml");
-            var project = _serializer.LoadFromFile<ProjectDefinition>(projectYaml);
-
+            // Load tables and compose original model
             var tablesPath = Path.Combine(exampleProjectPath, "tables");
             var registry = new TableRegistry(_serializer);
             registry.LoadTables(tablesPath);
@@ -135,7 +129,7 @@ public class TmdlSerializationTests
             var modelDef = _serializer.LoadFromFile<ModelDefinition>(modelPath);
 
             var composer = new ModelComposer(registry);
-            var originalDatabase = composer.ComposeModel(modelDef, 1600, project: project, projectRootPath: exampleProjectPath);
+            var originalDatabase = composer.ComposeModel(modelDef, projectRootPath: exampleProjectPath);
 
             // Serialize to TMDL
             TmdlSerializer.SerializeDatabaseToFolder(originalDatabase, outputPath);

@@ -53,15 +53,24 @@ public static class ListCommand
         var serializer = new YamlSerializer();
         var assetLoader = new AssetLoader(serializer);
 
-        // Load project and resolve asset paths
-        var (project, assetPaths) = assetLoader.LoadProject(projectPath);
+        // Find model files by convention
+        var modelFiles = assetLoader.FindModelFiles(projectPath);
 
-        Console.WriteLine($"Project: {project.Name}");
-        if (!string.IsNullOrWhiteSpace(project.Description))
+        if (modelFiles.Count == 0)
         {
-            Console.WriteLine($"Description: {project.Description}");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("No model files found in models/ directory.");
+            Console.ResetColor();
+            return;
         }
+
+        // Use the first model for project-level display info
+        var firstModel = serializer.LoadFromFile<ModelDefinition>(modelFiles[0]);
+        Console.WriteLine($"Project: {projectPath}");
         Console.WriteLine();
+
+        // Resolve asset paths from first model to list tables
+        var assetPaths = assetLoader.ResolveAssetPaths(firstModel, projectPath);
 
         // List tables from all configured paths
         if (assetPaths.TablePaths.Count > 0)
@@ -121,9 +130,7 @@ public static class ListCommand
             Console.WriteLine();
         }
 
-        // List models from all configured paths
-        var modelFiles = assetLoader.GetModelFiles(assetPaths);
-        
+        // List models
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.WriteLine($"Models ({modelFiles.Count}):");
         Console.ResetColor();

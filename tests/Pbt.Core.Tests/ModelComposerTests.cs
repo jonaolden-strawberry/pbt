@@ -34,13 +34,9 @@ public class ModelComposerTests
         var modelPath = Path.Combine(exampleProjectPath, "models", "sales_model.yaml");
         var modelDef = _serializer.LoadFromFile<ModelDefinition>(modelPath);
 
-        // Load project definition for expressions
-        var projectYaml = Path.Combine(exampleProjectPath, "project.yml");
-        var project = _serializer.LoadFromFile<ProjectDefinition>(projectYaml);
-
         // Act
         var composer = new ModelComposer(registry);
-        var database = composer.ComposeModel(modelDef, 1600, project: project, projectRootPath: exampleProjectPath);
+        var database = composer.ComposeModel(modelDef, projectRootPath: exampleProjectPath);
 
         // Assert - Database
         Assert.NotNull(database);

@@ -1,5 +1,6 @@
 name: SalesAnalytics
 description: Sales analytics model showcasing all pbt features
+compatibility_level: 1600
 
 tables:
   - ref: Sales

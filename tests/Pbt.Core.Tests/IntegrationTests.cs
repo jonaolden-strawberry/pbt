@@ -31,24 +31,18 @@ public class IntegrationTests
 
         var tablesPath = Path.Combine(exampleProjectPath, "tables");
         var modelsPath = Path.Combine(exampleProjectPath, "models");
-        var projectYaml = Path.Combine(exampleProjectPath, "project.yml");
 
-        // Act - Load project configuration
-        var project = _serializer.LoadFromFile<ProjectDefinition>(projectYaml);
+        // Act - Load model (which now carries project-level configuration)
+        var salesModelPath = Path.Combine(modelsPath, "sales_model.yaml");
+        var model = _serializer.LoadFromFile<ModelDefinition>(salesModelPath);
 
         // Act - Load table registry
         var registry = new TableRegistry(_serializer);
         registry.LoadTables(tablesPath);
 
-        // Act - Load model
-        var salesModelPath = Path.Combine(modelsPath, "sales_model.yaml");
-        var model = _serializer.LoadFromFile<ModelDefinition>(salesModelPath);
-
-        // Assert - Project
-        Assert.Equal("SampleProject", project.Name);
-        Assert.Equal(1600, project.CompatibilityLevel);
-        Assert.NotNull(project.Expressions);
-        Assert.Contains(project.Expressions, e => e.Name == "ServerName");
+        // Assert - Model carries project-level config
+        Assert.Equal("SalesAnalytics", model.Name);
+        Assert.Equal(1600, model.CompatibilityLevel);
 
         // Assert - Tables loaded
         Assert.Equal(3, registry.Count);
@@ -85,8 +79,7 @@ public class IntegrationTests
         Assert.Contains(dateDimTable.Columns, c => c.Name == "MonthName" && c.SortByColumn == "MonthNum");
         Assert.Contains(dateDimTable.Columns, c => c.Name == "MonthNum" && c.IsHidden == true);
 
-        // Assert - Model loaded
-        Assert.Equal("SalesAnalytics", model.Name);
+        // Assert - Model content
         Assert.Equal(3, model.Tables.Count);
         Assert.Contains(model.Tables, t => t.Ref == "Sales");
         Assert.Contains(model.Tables, t => t.Ref == "Customers");
