@@ -59,7 +59,7 @@ dotnet run --project src/Pbt -- --help
 
 ### Requirements
 
-- .NET 9.0 SDK or later
+- .NET 10.0 SDK or later
 - Windows, macOS, or Linux
 
 ### Verify Installation
@@ -460,6 +460,46 @@ Deletes the lineage manifest. The next build will generate all new lineage tags.
 pbt lineage reset my_project --confirm
 ```
 
+### diff - Compare Project States
+
+```bash
+pbt diff <path-a> <path-b> [options]
+```
+
+Compares two project states and classifies each change as breaking or non-breaking.
+
+**Arguments:**
+- `path-a`: First project path (e.g., a previous snapshot or git worktree checkout)
+- `path-b`: Second project path (e.g., current working copy)
+
+**Options:**
+- `--breaking`: Return non-zero exit code if breaking changes are detected (useful in CI)
+- `--output <format>`: Output format: `text` (default) or `json`
+
+**Breaking changes detected:**
+- Table removed
+- Column removed or type changed
+- Measure removed
+- Relationship removed
+- Model removed
+
+**Non-breaking changes detected:**
+- Table, column, measure, relationship, or model added
+- Column description or format string changed
+- Measure expression changed
+
+**Examples:**
+```bash
+# Compare two project snapshots
+pbt diff ./project_v1 ./project_v2
+
+# JSON output for CI pipelines
+pbt diff ./old ./new --output json
+
+# Fail CI if breaking changes exist
+pbt diff ./old ./new --breaking
+```
+
 ### Pre-Build Hooks
 
 Instead of a built-in transformation DSL, pbt uses **pre-build hooks** that let you run arbitrary scripts before the build. This keeps pbt focused on model composition while giving you full control over transformations.
@@ -626,7 +666,7 @@ expressions:
 pbt build my_project --env dev
 ```
 
-Expressions defined in the environment override matching expressions from `project.yml` and model definitions. You can also reference system environment variables with `${ENV_VAR}` syntax.
+Expressions defined in the environment override matching expressions from model definitions. You can also reference system environment variables with `${ENV_VAR}` syntax.
 
 ### Calculation Groups
 
@@ -771,7 +811,7 @@ measures:
 ## Architecture
 
 pbt (Power BI Build Tool) is built with:
-- **.NET 9.0**: Modern C# with native performance
+- **.NET 10.0**: Modern C# with native performance
 - **System.CommandLine**: Modern CLI framework
 - **YamlDotNet**: YAML parsing and serialization
 - **Microsoft.AnalysisServices.NetCore**: Power BI Tabular Object Model (TOM)
