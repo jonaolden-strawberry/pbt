@@ -123,14 +123,16 @@ public static class PbipGenerator
         var pageDir = Path.Combine(reportDefinitionPath, "pages", "ReportSection");
         Directory.CreateDirectory(pageDir);
 
-        var pageJsonContent = new
+        var pageJsonObj = new Dictionary<string, object>
         {
-            displayName = "Page 1",
-            displayOption = 0,
-            height = 720.00,
-            width = 1280.00
+            ["$schema"] = "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/1.0.0/schema.json",
+            ["name"] = "ReportSection",
+            ["displayName"] = "Page 1",
+            ["displayOption"] = "FitToPage",
+            ["height"] = 720.00,
+            ["width"] = 1280.00
         };
-        File.WriteAllText(Path.Combine(pageDir, "page.json"), System.Text.Json.JsonSerializer.Serialize(pageJsonContent, jsonOptions));
+        File.WriteAllText(Path.Combine(pageDir, "page.json"), System.Text.Json.JsonSerializer.Serialize(pageJsonObj, jsonOptions));
 
         // 6c. version.json
         var versionJson = new PbirVersionDefinition
