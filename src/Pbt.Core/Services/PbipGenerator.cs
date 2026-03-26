@@ -102,6 +102,7 @@ public static class PbipGenerator
         // 6a. report.json — minimal valid structure per schema 3.0.0
         //     Required: $schema, themeCollection (with baseTheme containing name, reportVersionAtImport object, type)
         //     reportVersionAtImport is an object with visual/page/report version strings, NOT a plain string
+        //     These versions must match realistic PBI Desktop internal versions (not schema versions)
         //     datasetBinding is NOT allowed by the schema (additionalProperties: false)
         var reportJsonObj = new Dictionary<string, object>
         {
@@ -110,12 +111,12 @@ public static class PbipGenerator
             {
                 ["baseTheme"] = new Dictionary<string, object>
                 {
-                    ["name"] = "CY24SU06",
+                    ["name"] = "CY24SU05",
                     ["reportVersionAtImport"] = new Dictionary<string, object>
                     {
-                        ["visual"] = "5.50.0",
-                        ["page"] = "5.50.0",
-                        ["report"] = "5.50.0"
+                        ["visual"] = "1.8.90",
+                        ["page"] = "1.3.90",
+                        ["report"] = "2.0.90"
                     },
                     ["type"] = "SharedResources"
                 }
@@ -148,11 +149,11 @@ public static class PbipGenerator
         };
         File.WriteAllText(Path.Combine(reportDefinitionPath, "pages", "pages.json"), System.Text.Json.JsonSerializer.Serialize(pagesJsonObj, jsonOptions));
 
-        // 6d. version.json
+        // 6d. version.json — PBIR definition version (2.0 is the current stable version)
         var versionJson = new PbirVersionDefinition
         {
             Schema = "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/versionMetadata/1.0.0/schema.json",
-            Version = "3.0.0"
+            Version = "2.0.0"
         };
         File.WriteAllText(Path.Combine(reportDefinitionPath, "version.json"), System.Text.Json.JsonSerializer.Serialize(versionJson, jsonOptions));
 

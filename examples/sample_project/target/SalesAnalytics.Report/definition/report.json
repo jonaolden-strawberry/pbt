@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.0.0/schema.json",
   "themeCollection": {
     "baseTheme": {
-      "name": "CY24SU06",
+      "name": "CY24SU05",
       "reportVersionAtImport": {
-        "visual": "5.50.0",
-        "page": "5.50.0",
-        "report": "5.50.0"
+        "visual": "1.8.90",
+        "page": "1.3.90",
+        "report": "2.0.90"
       },
       "type": "SharedResources"
     }
