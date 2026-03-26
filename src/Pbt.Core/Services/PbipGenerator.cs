@@ -202,6 +202,8 @@ public static class PbipGenerator
 
     /// <summary>
     /// Validate that a PBIP output directory contains all required files in the correct locations.
+    /// Uses PbipValidator for comprehensive PBIR-format validation including:
+    /// TMDL deserialization, report structure, JSON parseability, and encoding checks.
     /// Returns a list of errors (empty if valid).
     /// </summary>
     public static List<string> ValidatePbipStructure(string outputPath, string projectName)
@@ -209,6 +211,7 @@ public static class PbipGenerator
         var errors = new List<string>();
         var sanitizedName = FileNameSanitizer.Sanitize(projectName);
 
+        // Validate .pbip root file and platform files exist (not covered by PbipValidator)
         void RequireFile(string relativePath)
         {
             if (!File.Exists(Path.Combine(outputPath, relativePath)))
@@ -221,63 +224,21 @@ public static class PbipGenerator
                 errors.Add($"Missing required directory: {relativePath}");
         }
 
-        // .pbip root file
         RequireFile($"{sanitizedName}.pbip");
-
-        // SemanticModel structure
         RequireDirectory($"{sanitizedName}.SemanticModel");
         RequireFile($"{sanitizedName}.SemanticModel/.platform");
         RequireFile($"{sanitizedName}.SemanticModel/definition.pbism");
-        RequireDirectory($"{sanitizedName}.SemanticModel/definition");
-        RequireFile($"{sanitizedName}.SemanticModel/definition/database.tmdl");
-        RequireFile($"{sanitizedName}.SemanticModel/definition/model.tmdl");
-
-        // Report structure
         RequireDirectory($"{sanitizedName}.Report");
         RequireFile($"{sanitizedName}.Report/.platform");
-        RequireFile($"{sanitizedName}.Report/definition.pbir");
-        RequireDirectory($"{sanitizedName}.Report/definition");
-        RequireFile($"{sanitizedName}.Report/definition/report.json");
 
-        // Validate JSON files are parseable
-        var jsonFiles = new[]
-        {
-            $"{sanitizedName}.pbip",
-            $"{sanitizedName}.Report/definition.pbir",
-            $"{sanitizedName}.Report/.platform",
-            $"{sanitizedName}.SemanticModel/.platform",
-            $"{sanitizedName}.SemanticModel/definition.pbism",
-        };
+        // Delegate to PbipValidator for comprehensive PBIR validation
+        errors.AddRange(PbipValidator.ValidateSemanticModel(outputPath));
 
-        foreach (var jsonFile in jsonFiles)
+        var reportFolder = Path.Combine(outputPath, $"{sanitizedName}.Report");
+        if (Directory.Exists(reportFolder))
         {
-            var fullPath = Path.Combine(outputPath, jsonFile);
-            if (File.Exists(fullPath))
-            {
-                try
-                {
-                    var content = File.ReadAllText(fullPath);
-                    JsonDocument.Parse(content);
-                }
-                catch (JsonException ex)
-                {
-                    errors.Add($"Invalid JSON in {jsonFile}: {ex.Message}");
-                }
-            }
-        }
-
-        // Validate TMDL can be deserialized
-        var tmdlPath = Path.Combine(outputPath, $"{sanitizedName}.SemanticModel", "definition");
-        if (Directory.Exists(tmdlPath))
-        {
-            try
-            {
-                TmdlSerializer.DeserializeDatabaseFromFolder(tmdlPath);
-            }
-            catch (Exception ex)
-            {
-                errors.Add($"TMDL deserialization failed: {ex.Message}");
-            }
+            errors.AddRange(PbipValidator.ValidateReportStructure(reportFolder));
+            errors.AddRange(PbipValidator.ValidateJsonFiles(reportFolder));
         }
 
         return errors;
