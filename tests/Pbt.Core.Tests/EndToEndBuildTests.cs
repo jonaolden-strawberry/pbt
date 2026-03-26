@@ -229,6 +229,36 @@ public class EndToEndBuildTests
             // Validate PBIP structure (file placement matches Power BI Desktop expectations)
             var pbipErrors = PbipGenerator.ValidatePbipStructure(targetPath, modelDef.Name);
             Assert.Empty(pbipErrors);
+
+            // Verify PBIR report structure matches spec
+            var reportPath = Path.Combine(targetPath, $"{sanitizedName}.Report");
+            var reportDefPath = Path.Combine(reportPath, "definition");
+
+            // definition.pbir at report root (version 4.0 = PBIR format)
+            Assert.True(File.Exists(Path.Combine(reportPath, "definition.pbir")), "definition.pbir missing");
+            var pbirJson = System.Text.Json.JsonDocument.Parse(File.ReadAllText(Path.Combine(reportPath, "definition.pbir")));
+            Assert.Equal("4.0", pbirJson.RootElement.GetProperty("version").GetString());
+
+            // Required PBIR files inside definition/
+            Assert.True(File.Exists(Path.Combine(reportDefPath, "report.json")), "definition/report.json missing");
+            Assert.True(File.Exists(Path.Combine(reportDefPath, "version.json")), "definition/version.json missing");
+            Assert.True(Directory.Exists(Path.Combine(reportDefPath, "pages")), "definition/pages/ missing");
+
+            // pages.json at definition/ level (not inside pages/)
+            Assert.True(File.Exists(Path.Combine(reportDefPath, "pages.json")), "definition/pages.json missing");
+            Assert.False(File.Exists(Path.Combine(reportDefPath, "pages", "pages.json")), "pages.json should be at definition/ level, not inside pages/");
+
+            // At least one page with page.json
+            var pageDirs = Directory.GetDirectories(Path.Combine(reportDefPath, "pages"));
+            Assert.NotEmpty(pageDirs);
+            foreach (var pageDir in pageDirs)
+            {
+                Assert.True(File.Exists(Path.Combine(pageDir, "page.json")), $"page.json missing in {Path.GetFileName(pageDir)}");
+            }
+
+            // All JSON files must be valid JSON without UTF-8 BOM
+            var jsonErrors = PbipValidator.ValidateJsonFiles(reportPath);
+            Assert.Empty(jsonErrors);
         }
         finally
         {

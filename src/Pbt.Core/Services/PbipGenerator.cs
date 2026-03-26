@@ -139,14 +139,14 @@ public static class PbipGenerator
         };
         File.WriteAllText(Path.Combine(pageDir, "page.json"), System.Text.Json.JsonSerializer.Serialize(pageJsonObj, jsonOptions));
 
-        // 6c. pages.json — page order and active page
+        // 6c. pages.json — page order and active page (at definition/ level, not inside pages/)
         var pagesJsonObj = new Dictionary<string, object>
         {
             ["$schema"] = "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/pagesMetadata/1.0.0/schema.json",
             ["pageOrder"] = new[] { pageName },
             ["activePageName"] = pageName
         };
-        File.WriteAllText(Path.Combine(reportDefinitionPath, "pages", "pages.json"), System.Text.Json.JsonSerializer.Serialize(pagesJsonObj, jsonOptions));
+        File.WriteAllText(Path.Combine(reportDefinitionPath, "pages.json"), System.Text.Json.JsonSerializer.Serialize(pagesJsonObj, jsonOptions));
 
         // 6d. version.json
         var versionJson = new PbirVersionDefinition
