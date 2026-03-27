@@ -564,10 +564,14 @@ public static class BuildCommand
                     connectorNames.Add(sourceConfig.Connector.Name);
                 }
             }
-            catch (Exception)
+            catch (YamlDotNet.Core.YamlException)
             {
                 // Skip files that cannot be parsed as SourceTypeConfig —
                 // the *_config.yaml glob may match unrelated config files.
+            }
+            catch (IOException)
+            {
+                // Skip unreadable config files
             }
         }
 

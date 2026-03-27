@@ -208,7 +208,8 @@ public static class PbipValidator
             }
             catch (JsonException)
             {
-                // JSON parse errors caught in ValidateJsonFiles
+                // JSON parse errors are reported by ValidateJsonFiles — skip duplicate binding check for this page
+                continue;
             }
 
             // Visuals (folder is optional; visual.json required IF folder exists)
