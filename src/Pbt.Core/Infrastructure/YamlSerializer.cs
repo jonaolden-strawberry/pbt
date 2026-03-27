@@ -22,7 +22,6 @@ public sealed class YamlSerializer
         _deserializer = new DeserializerBuilder()
             .WithNamingConvention(UnderscoredNamingConvention.Instance)
             .WithTypeConverter(new RelationshipDefinitionYamlConverter())
-            .IgnoreUnmatchedProperties()
             .Build();
 
         // Configure serializer (C# -> YAML)
