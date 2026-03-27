@@ -13,6 +13,7 @@ public static class ImportCommand
         var command = new Command("import", "Import TMDL models or tables to YAML format");
         command.AddCommand(CreateModelSubcommand());
         command.AddCommand(CreateTableSubcommand());
+        command.AddCommand(CreateSourceSubcommand());
         return command;
     }
 
@@ -292,6 +293,137 @@ public static class ImportCommand
             Console.WriteLine();
             Console.WriteLine("Note: Lineage tags were not included. Run 'pbt build' to generate new lineage tags.");
         }
+    }
+
+    #endregion
+
+    #region Source Subcommand
+
+    private static Command CreateSourceSubcommand()
+    {
+        var sourceConfigArgument = new Argument<string>("source-config", "Path to source configuration file (e.g., snowflake_config.yaml)");
+        var outputPathOption = new Option<string>("--output", () => "./tables", "Path where table YAML files will be created");
+        var testConnectionOption = new Option<bool>("--test", "Test the connection without importing");
+        var dryRunOption = new Option<bool>("--dry-run", "Show what would be imported without writing files");
+
+        var command = new Command("source", "Import tables directly from a data source (Snowflake, SQL Server)")
+        {
+            sourceConfigArgument, outputPathOption, testConnectionOption, dryRunOption
+        };
+
+        command.SetHandler((sourceConfigPath, outputPath, testConnection, dryRun) =>
+        {
+            try
+            {
+                ExecuteSourceImport(sourceConfigPath, outputPath, testConnection, dryRun);
+            }
+            catch (Exception ex)
+            {
+                PrintError("Source import failed", ex);
+                Environment.Exit(1);
+            }
+        }, sourceConfigArgument, outputPathOption, testConnectionOption, dryRunOption);
+
+        return command;
+    }
+
+    private static void ExecuteSourceImport(string sourceConfigPath, string outputPath, bool testConnection, bool dryRun)
+    {
+        if (!File.Exists(sourceConfigPath))
+            throw new FileNotFoundException($"Source config file not found: {sourceConfigPath}");
+
+        var serializer = new YamlSerializer();
+        var sourceConfig = serializer.LoadFromFile<SourceTypeConfig>(sourceConfigPath);
+
+        if (sourceConfig.Import == null)
+            throw new InvalidOperationException(
+                $"Source config '{sourceConfigPath}' is missing 'import' section.\n" +
+                "Add database, schema, and tables to enable live import.");
+
+        Console.WriteLine($"Source: {sourceConfig.SourceType}");
+        Console.WriteLine($"Database: {sourceConfig.Import.Database}");
+        Console.WriteLine($"Schema: {sourceConfig.Import.Schema}");
+        if (sourceConfig.Import.ImportAllTables)
+            Console.WriteLine("Tables: all");
+        else
+            Console.WriteLine($"Tables: {string.Join(", ", sourceConfig.Import.Tables)}");
+        Console.WriteLine();
+
+        // Create the appropriate schema reader based on source type
+        ISchemaReader reader = sourceConfig.SourceType.ToLowerInvariant() switch
+        {
+            "snowflake" => new SnowflakeSchemaReader(sourceConfig),
+            _ => throw new InvalidOperationException(
+                $"Live import not supported for source type '{sourceConfig.SourceType}'. " +
+                "Supported: snowflake. For other sources, use 'pbt import table <csv-path>'.")
+        };
+
+        // Test connection mode
+        if (testConnection)
+        {
+            Console.WriteLine("Testing connection...");
+            if (reader is SnowflakeSchemaReader sfReader)
+            {
+                var info = sfReader.TestConnection();
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"✓ {info}");
+                Console.ResetColor();
+            }
+            return;
+        }
+
+        // Read schema from live source
+        Console.WriteLine("Querying INFORMATION_SCHEMA...");
+        var rows = reader.ReadSchema();
+        var csvReader = new CsvSchemaReader();
+        var tableGroups = csvReader.GroupByTable(rows);
+
+        Console.WriteLine($"Found {tableGroups.Count} table(s) with {rows.Count} column(s)");
+        Console.WriteLine();
+
+        if (dryRun)
+        {
+            Console.WriteLine("Tables that would be imported:");
+            foreach (var (tableName, tableRows) in tableGroups)
+                Console.WriteLine($"  • {tableName} ({tableRows.Count} columns)");
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("\nDry run — no files written.");
+            Console.ResetColor();
+            return;
+        }
+
+        // Generate tables using existing pipeline
+        Directory.CreateDirectory(outputPath);
+
+        var config = ScaffoldConfig.CreateDefault();
+        if (sourceConfig.Connector != null)
+        {
+            config.Source = new SourceConfig
+            {
+                Type = sourceConfig.SourceType,
+                Connection = sourceConfig.Connector.Connection
+            };
+        }
+
+        var generator = new TableGenerator(config, sourceConfig);
+        var merger = new TableMerger(new MergeOptions { UpdateTypes = true });
+
+        Console.WriteLine("Importing tables:");
+        foreach (var (tableName, tableRows) in tableGroups)
+        {
+            var generated = generator.GenerateTable(tableName, tableRows);
+            var fileName = FileNameSanitizer.SanitizeToLower(generated.Name) + ".yaml";
+            var filePath = Path.Combine(outputPath, fileName);
+
+            var merged = merger.MergeTable(generated, filePath);
+            serializer.SaveToFile(merged, filePath);
+            Console.WriteLine($"  ✓ {fileName} ({merged.Columns.Count} columns)");
+        }
+
+        Console.WriteLine();
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine($"✓ Imported {tableGroups.Count} table(s) from {sourceConfig.SourceType}");
+        Console.ResetColor();
     }
 
     #endregion

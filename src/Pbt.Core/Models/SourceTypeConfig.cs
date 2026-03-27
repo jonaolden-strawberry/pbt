@@ -26,6 +26,12 @@ public class SourceTypeConfig
     /// Column naming configuration
     /// </summary>
     public ColumnNamingConfig? ColumnNaming { get; set; }
+
+    /// <summary>
+    /// Live import configuration (database, schema, table filter).
+    /// When present, enables direct schema extraction from the source.
+    /// </summary>
+    public SourceImportConfig? Import { get; set; }
 }
 
 /// <summary>
