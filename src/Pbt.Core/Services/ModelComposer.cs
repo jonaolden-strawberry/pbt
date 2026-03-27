@@ -56,6 +56,7 @@ public sealed class ModelComposer
 
         var database = new Database
         {
+            Name = modelDef.Name,
             CompatibilityLevel = modelDef.CompatibilityLevel,
             Model = new Model
             {
