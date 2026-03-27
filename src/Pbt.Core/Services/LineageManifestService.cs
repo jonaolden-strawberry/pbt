@@ -11,13 +11,15 @@ namespace Pbt.Core.Services;
 public sealed class LineageManifestService
 {
     private readonly YamlSerializer _serializer;
+    private readonly TimeProvider _timeProvider;
     private LineageManifest _manifest;
     private readonly HashSet<string> _newTags = new();
     private readonly List<string> _collisionWarnings = new();
 
-    public LineageManifestService(YamlSerializer serializer)
+    public LineageManifestService(YamlSerializer serializer, TimeProvider? timeProvider = null)
     {
         _serializer = serializer;
+        _timeProvider = timeProvider ?? TimeProvider.System;
         _manifest = new LineageManifest();
     }
 
@@ -45,7 +47,7 @@ public sealed class LineageManifestService
             _manifest = new LineageManifest
             {
                 Version = 1,
-                GeneratedAt = DateTime.UtcNow
+                GeneratedAt = _timeProvider.GetUtcNow().UtcDateTime
             };
         }
     }
@@ -65,7 +67,7 @@ public sealed class LineageManifestService
         }
 
         // Update timestamp
-        _manifest.GeneratedAt = DateTime.UtcNow;
+        _manifest.GeneratedAt = _timeProvider.GetUtcNow().UtcDateTime;
 
         _serializer.SaveToFile(_manifest, manifestPath);
     }
@@ -196,7 +198,7 @@ public sealed class LineageManifestService
         _manifest = new LineageManifest
         {
             Version = 1,
-            GeneratedAt = DateTime.UtcNow
+            GeneratedAt = _timeProvider.GetUtcNow().UtcDateTime
         };
         _newTags.Clear();
     }
