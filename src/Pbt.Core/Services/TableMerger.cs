@@ -6,12 +6,12 @@ namespace Pbt.Core.Services;
 /// <summary>
 /// Smart merge service that preserves manual edits when re-scaffolding
 /// </summary>
-public sealed class SmartMerger
+public sealed class TableMerger
 {
     private readonly YamlSerializer _serializer;
     private readonly MergeOptions _options;
 
-    public SmartMerger(MergeOptions options)
+    public TableMerger(MergeOptions options)
     {
         _serializer = new YamlSerializer();
         _options = options;
