@@ -1,0 +1,28 @@
+src/Pbt.Core/Services/SnowflakeSchemaReader.cs
+  s_55b3fed4e7b4eb::t_480c237bb9bf66 11
+src/Pbt/Commands/ImportCommand.cs
+  s_55b3fed4e7b4eb::t_4327c67a9ecbc8 365-368
+  s_55b3fed4e7b4eb::t_afc9ac7043ed98 353
+src/Pbt.Core/Services/ModelComposer.cs
+  s_55b3fed4e7b4eb::t_15daf7b9a62a90 724,726-734
+  s_55b3fed4e7b4eb::t_5bd6a3bc67dee7 585
+src/Pbt.Core/Services/TableGenerator.cs
+  s_55b3fed4e7b4eb::t_92aebe45b38d58 87-88,90-95
+  s_55b3fed4e7b4eb::t_d0ec223226ba5d 12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3991d6939d601e4fbe40f1696612a4866105087b",
+  "prompts": {},
+  "sessions": {
+    "s_55b3fed4e7b4eb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "2293659d-a607-414b-93e1-35de8593b6c5",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  }
+}
