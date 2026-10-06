@@ -1,0 +1,72 @@
+src/Pbt.Core/Models/CalculationGroupDefinition.cs
+  s_127c9eec624100::t_aa0a931281e3f0 35-44
+src/Pbt.Core/Models/RoleDefinition.cs
+  s_127c9eec624100::t_a8f59a551c4a84 6
+  s_127c9eec624100::t_c16e6f76df770c 43-47
+tests/Pbt.Core.Tests/TomFeatureCoverageTests.cs
+  s_127c9eec624100::t_c568b02fbbfd1e 132-165
+  s_127c9eec624100::t_d8fe712918cf4d 100-131
+  s_127c9eec624100::t_ed32c04572faf4 1-51,53-55,57-99,166
+  s_127c9eec624100::t_29e56afbc490fd 52
+  s_127c9eec624100::t_7f040d17bebeb7 56
+src/Pbt.Core/Models/MetadataDefinition.cs
+  s_127c9eec624100::t_a8f59a551c4a84 1-17
+src/Pbt.Core/Models/RelationshipDefinition.cs
+  s_127c9eec624100::t_a8f59a551c4a84 6,50-59
+src/Pbt.Core/Models/TableDefinition.cs
+  s_127c9eec624100::t_d63905128537c0 32-35
+  s_127c9eec624100::t_a8f59a551c4a84 6,31,87-107,109
+src/Pbt.Core/Models/ColumnDefinition.cs
+  s_127c9eec624100::t_a8f59a551c4a84 6,86-115,117,119
+src/Pbt.Core/Models/PerspectiveDefinition.cs
+  s_127c9eec624100::t_a8f59a551c4a84 6
+src/Pbt.Core/Services/Validator.cs
+  s_127c9eec624100::t_b04078ca15efee 479,481-483,485-487,490-492,494-498,501-502
+  s_127c9eec624100::t_d8fe712918cf4d 37
+  s_127c9eec624100::t_27532c3c3934c7 488
+src/Pbt.Core/Models/MeasureDefinition.cs
+  s_127c9eec624100::t_a8f59a551c4a84 6,47-72
+src/Pbt.Core/Models/HierarchyDefinition.cs
+  s_127c9eec624100::t_a8f59a551c4a84 6
+src/Pbt.Core/Services/ModelComposer.cs
+  s_127c9eec624100::t_27532c3c3934c7 764,767-772,921,1178
+  s_127c9eec624100::t_aa0a931281e3f0 184-191,202-204,814,1351-1355,1535-1562
+  s_127c9eec624100::t_d10b38b72fc73d 274,276-277
+  s_127c9eec624100::t_c16e6f76df770c 84-85,112-113,288-301,382-388,524,584,598-607,609-642,678-679,723-727,796-813,1531,1563,1586-1590,1592-1603,1608
+  s_127c9eec624100::t_d63905128537c0 219-240,242,244-257,259,287,315,320,325,328,333,335-337
+  s_127c9eec624100::t_7c3b1dbbb906f9 1293
+  s_127c9eec624100::t_8f4984f808fd46 608
+  s_127c9eec624100::t_cb7d148bfa6713 16-17,72-73,100-103,154-159,241,243,258,260-273,275,278-286
+  s_127c9eec624100::t_b04078ca15efee 74,355-360,453-456,868-871,917,971-972,998,1494-1498
+  s_127c9eec624100::t_bfd87eb6f7a95f 160,205,302,728,815,1564
+src/Pbt.Core/Models/ModelDefinition.cs
+  s_127c9eec624100::t_d63905128537c0 110-114,134-166
+  s_127c9eec624100::t_aa0a931281e3f0 109,115-123,167-202
+  s_127c9eec624100::t_a8f59a551c4a84 8
+src/Pbt.Core/Models/PartitionDefinition.cs
+  s_127c9eec624100::t_a8f59a551c4a84 7
+  s_127c9eec624100::t_d63905128537c0 28-62
+src/Pbt.Core/Pbt.Core.csproj
+  s_127c9eec624100::t_b04078ca15efee 10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b087a41224b505e7dc61b6e190386935aa851344",
+  "prompts": {},
+  "humans": {
+    "h_98dc8200fc2119": {
+      "author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  },
+  "sessions": {
+    "s_127c9eec624100": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eaf1040f-3fa8-4dcb-a00d-1e5bce787e91",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  }
+}
