@@ -1,0 +1,44 @@
+src/Pbt/Commands/DiffCommand.cs
+  s_127c9eec624100::t_9f0e0d30aba9f4 69-70,72-77,97-137
+  s_127c9eec624100::t_846f9e46ac95ae 138
+docs/tom-features.md
+  s_127c9eec624100::t_8c6b7715a41f47 1-29
+src/Pbt/Commands/ImportCommand.cs
+  s_127c9eec624100::t_b00d813fd14029 498-499
+src/Pbt.Core/Services/TomDiff.cs
+  s_127c9eec624100::t_9f0e0d30aba9f4 1-82
+src/Pbt.Core/Services/TmdlTableImporter.cs
+  s_127c9eec624100::t_df3bc43465979f 105,247
+src/Pbt.Core/Services/ModelComposer.cs
+  s_127c9eec624100::t_aef14a5ba16158 344-345,463,472,478,480-487
+src/Pbt.Core/Services/TomConverter.cs
+  s_127c9eec624100::t_df3bc43465979f 12-28,34,40-44,48,50-52,54-55,57,59,63,67,71,73-74,79-137,139-142,144,146-149,151-152,154-183,188,192-193,196,198-201,205,207,209-212,215,217,225-229,232,234-238,240-258,261-269,273-312,332-389
+  s_127c9eec624100::t_aef14a5ba16158 62,138
+  s_127c9eec624100::t_b274a1784b5cde 313-331
+  s_127c9eec624100::t_fc9c1396bee455 390
+tests/Pbt.Core.Tests/TomFeatureCoverageTests.cs
+  s_127c9eec624100::t_e864b93e586cea 213-241
+  s_127c9eec624100::t_60ed833d3a3f83 167-204,210-212
+  s_127c9eec624100::t_aa3b65857ef9a5 205-209
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4173403d4965e760323fbbd49dc57e755bfa65c5",
+  "prompts": {},
+  "humans": {
+    "h_98dc8200fc2119": {
+      "author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  },
+  "sessions": {
+    "s_127c9eec624100": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "eaf1040f-3fa8-4dcb-a00d-1e5bce787e91",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  }
+}
