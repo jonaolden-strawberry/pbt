@@ -1,0 +1,56 @@
+plugins/snowflake_to_tmdl/README.md
+  s_5a61a05a54cdf7::t_5f7bd925bb308b 11,21,71-73,81
+  s_5a61a05a54cdf7::t_a70851e433c284 82
+plugins/csv_to_tmdl/csv_to_tmdl/types.py
+  s_5a61a05a54cdf7::t_d667ae55825326 1-40
+plugins/csv_to_tmdl/csv_to_tmdl/cli.py
+  s_5a61a05a54cdf7::t_d667ae55825326 1-37
+src/Pbt/Commands/ImportCommand.cs
+  s_5a61a05a54cdf7::t_ec79afaf904767 136,138,140,142,145,149,151-154,161
+README.md
+  s_5a61a05a54cdf7::t_39ef868704375c 96
+plugins/csv_to_tmdl/csv_to_tmdl/render.py
+  s_5a61a05a54cdf7::t_d667ae55825326 1-73
+examples/snowflake.yaml
+  s_5a61a05a54cdf7::t_39ef868704375c 1,3-6
+plugins/snowflake_to_tmdl/tests/test_cli.py
+  s_5a61a05a54cdf7::t_5f7bd925bb308b 45-54
+docs/cli-reference.md
+  s_5a61a05a54cdf7::t_39ef868704375c 243,253,260,277,280-282
+plugins/csv_to_tmdl/tests/test_csv_to_tmdl.py
+  s_5a61a05a54cdf7::t_d667ae55825326 1-47
+plugins/csv_to_tmdl/pyproject.toml
+  s_5a61a05a54cdf7::t_d667ae55825326 1-21
+plugins/snowflake_to_tmdl/snowflake_to_tmdl/cli.py
+  s_5a61a05a54cdf7::t_5f7bd925bb308b 24-25,47-49,52-59,63,67-80,82-90,92-94
+plugins/snowflake_to_tmdl/snowflake_to_tmdl/snowflake_client.py
+  s_5a61a05a54cdf7::t_c46a25886ee148 166-167,169-175
+  s_5a61a05a54cdf7::t_5f7bd925bb308b 132-155,158
+plugins/csv_to_tmdl/csv_to_tmdl/__main__.py
+  s_5a61a05a54cdf7::t_d667ae55825326 1-4
+plugins/csv_to_tmdl/README.md
+  s_5a61a05a54cdf7::t_d667ae55825326 1-19
+plugins/csv_to_tmdl/csv_to_tmdl/__init__.py
+  s_5a61a05a54cdf7::t_d667ae55825326 1-5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8d6907f66f03646aba5f7d65a2185297aace3623",
+  "prompts": {},
+  "humans": {
+    "h_98dc8200fc2119": {
+      "author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  },
+  "sessions": {
+    "s_5a61a05a54cdf7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "82f0fd1f-2446-4455-9324-ca7df2150ac8",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  }
+}
