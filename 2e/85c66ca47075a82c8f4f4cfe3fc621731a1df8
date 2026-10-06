@@ -1,0 +1,26 @@
+src/Pbt.Core/Services/TmdlTableImporter.cs
+  s_550648ba6f481f::t_cdc5d928203bc2 87,93
+src/Pbt.Core/Services/PbipValidator.cs
+  s_550648ba6f481f::t_262f6be6dfe591 91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2e85c66ca47075a82c8f4f4cfe3fc621731a1df8",
+  "prompts": {},
+  "humans": {
+    "h_98dc8200fc2119": {
+      "author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  },
+  "sessions": {
+    "s_550648ba6f481f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "97397011-7f3b-4c9a-be6d-ecdf62ae4bff",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  }
+}
