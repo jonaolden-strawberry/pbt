@@ -1,0 +1,42 @@
+src/Pbt.Core/Services/SourceAdapters.cs
+  s_3f4e1c90c6ff1f::t_67fde42a48943b 1-150
+src/Pbt.Core/Models/ProjectConfig.cs
+  s_3f4e1c90c6ff1f::t_35357c374bd30b 44
+  s_3f4e1c90c6ff1f::t_db2207a015da11 61
+  s_3f4e1c90c6ff1f::t_67fde42a48943b 1-43,45-60,62-68
+src/Pbt/Program.cs
+  s_3f4e1c90c6ff1f::t_9227e1d429c699 45-46
+src/Pbt.Core/Services/ModelComposer.cs
+  s_3f4e1c90c6ff1f::t_9227e1d429c699 1034-1035,1038,1056-1057,1078-1080,1090-1093,1129-1130
+tests/Pbt.Core.Tests/TableGeneratorTests.cs
+  s_3f4e1c90c6ff1f::t_4fe62a18580ea1 26
+  s_3f4e1c90c6ff1f::t_9919ad5d5b4a71 1
+  s_3f4e1c90c6ff1f::t_cc2b6acd1768e4 2-25,27-230
+docs/cli-reference.md
+  s_3f4e1c90c6ff1f::t_3eb2fba0c84bef 408-439
+src/Pbt.Core/Services/TableGenerator.cs
+  s_3f4e1c90c6ff1f::t_9227e1d429c699 1-144
+src/Pbt/Commands/GenerateTablesCommand.cs
+  s_3f4e1c90c6ff1f::t_9227e1d429c699 1-71
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "73b4f2399a265b2d6bbf37b472a31c37baec890e",
+  "prompts": {},
+  "humans": {
+    "h_98dc8200fc2119": {
+      "author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  },
+  "sessions": {
+    "s_3f4e1c90c6ff1f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "18e1931d-3c96-404e-a800-d642773895fe",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  }
+}
