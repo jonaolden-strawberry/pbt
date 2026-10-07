@@ -1,0 +1,50 @@
+docs/cli-reference.md
+  s_8035326494c42c::t_9ba3c481e07c9d 430-432,435
+  s_8035326494c42c::t_a5cf0e9f75ee9e 439
+  s_8035326494c42c::t_6e4138a6036c33 277
+  s_8035326494c42c::t_720fa960672a57 436
+src/Pbt.Core/Models/ProjectConfig.cs
+  s_8035326494c42c::t_f04f4309161d84 32-36
+README.md
+  s_8035326494c42c::t_f04f4309161d84 96
+tests/Pbt.Core.Tests/TableGeneratorTests.cs
+  s_8035326494c42c::t_f04f4309161d84 215
+  s_8035326494c42c::t_7a724d35128d30 195,198,200-201,204,207-214,216-226
+  s_8035326494c42c::t_9ba3c481e07c9d 227-242,244-248
+src/Pbt.Core/SourceAdapters/SnowflakeAdapter.cs
+  s_8035326494c42c::t_f04f4309161d84 1-188
+examples/snowflake.yaml
+  s_8035326494c42c::t_a5cf0e9f75ee9e 3
+src/Pbt/Commands/ImportCommand.cs
+  s_8035326494c42c::t_f04f4309161d84 152
+  s_8035326494c42c::t_6e4138a6036c33 136
+src/Pbt.Core/Pbt.Core.csproj
+  s_8035326494c42c::t_7a724d35128d30 12
+src/Pbt.Core/SourceAdapters/CsvAdapter.cs
+  s_8035326494c42c::t_f04f4309161d84 1-117
+src/Pbt.Core/SourceAdapters/ISourceAdapter.cs
+  s_8035326494c42c::t_f04f4309161d84 1-43
+src/Pbt.Core/Services/TableGenerator.cs
+  s_8035326494c42c::t_f04f4309161d84 24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e6df9717321d5b7ad0b685027e38056e3b61de14",
+  "prompts": {},
+  "humans": {
+    "h_98dc8200fc2119": {
+      "author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  },
+  "sessions": {
+    "s_8035326494c42c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e9a0227e-157b-49ea-b3c1-71f277a31aa5",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  }
+}
