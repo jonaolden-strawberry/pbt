@@ -1,0 +1,24 @@
+src/Pbt/Commands/GenerateTablesCommand.cs
+  s_3f4e1c90c6ff1f::t_24fced997570c6 13,37-41,64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ea51dac092bf54cbae672f5c2cfa2bdd3a8dda7c",
+  "prompts": {},
+  "humans": {
+    "h_98dc8200fc2119": {
+      "author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  },
+  "sessions": {
+    "s_3f4e1c90c6ff1f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "18e1931d-3c96-404e-a800-d642773895fe",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  }
+}
