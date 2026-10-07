@@ -1,0 +1,30 @@
+.env.example
+  s_8035326494c42c::t_238f69a5448e8e 7-18
+docs/cli-reference.md
+  s_8035326494c42c::t_238f69a5448e8e 439-440
+tests/Pbt.Core.Tests/TableGeneratorTests.cs
+  s_8035326494c42c::t_22ffb61c469f52 226-231
+src/Pbt.Core/SourceAdapters/SnowflakeAdapter.cs
+  s_8035326494c42c::t_22ffb61c469f52 99,103-105,118,121-122,129-133,140-143
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3e42aff2d818fc66191f7653af4c0cfe600686ec",
+  "prompts": {},
+  "humans": {
+    "h_98dc8200fc2119": {
+      "author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  },
+  "sessions": {
+    "s_8035326494c42c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e9a0227e-157b-49ea-b3c1-71f277a31aa5",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  }
+}
