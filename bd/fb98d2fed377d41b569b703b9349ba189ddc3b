@@ -1,0 +1,29 @@
+tests/Pbt.Core.Tests/TableGeneratorTests.cs
+  s_3f4e1c90c6ff1f::t_9a2a000bb4c98d 96-111
+examples/sample_project/pbt.yml
+  h_98dc8200fc2119 15
+  s_3f4e1c90c6ff1f::t_9a2a000bb4c98d 2-3
+docs/cli-reference.md
+  s_3f4e1c90c6ff1f::t_9a2a000bb4c98d 441-442,455
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "bdfb98d2fed377d41b569b703b9349ba189ddc3b",
+  "prompts": {},
+  "humans": {
+    "h_98dc8200fc2119": {
+      "author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  },
+  "sessions": {
+    "s_3f4e1c90c6ff1f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "18e1931d-3c96-404e-a800-d642773895fe",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  }
+}
