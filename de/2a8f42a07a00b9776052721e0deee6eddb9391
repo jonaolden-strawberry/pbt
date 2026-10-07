@@ -1,0 +1,26 @@
+README.md
+  s_3f4e1c90c6ff1f::t_587055d90001c0 99-100
+docs/cli-reference.md
+  s_3f4e1c90c6ff1f::t_587055d90001c0 408,410-425,430,443-450,452-453,456-474
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "de2a8f42a07a00b9776052721e0deee6eddb9391",
+  "prompts": {},
+  "humans": {
+    "h_98dc8200fc2119": {
+      "author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  },
+  "sessions": {
+    "s_3f4e1c90c6ff1f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "18e1931d-3c96-404e-a800-d642773895fe",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  }
+}
