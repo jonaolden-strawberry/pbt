@@ -1,0 +1,31 @@
+examples/sample_project/snowflake_config.yaml
+  s_3f4e1c90c6ff1f::t_6d8a97b784ee1f 1-10
+examples/sample_project/README.md
+  s_3f4e1c90c6ff1f::t_22dde14fcc3834 20-22,86-88
+  s_3f4e1c90c6ff1f::t_7f4dcf3ab4566f 89
+examples/sample_project/.env.example
+  s_3f4e1c90c6ff1f::t_6d8a97b784ee1f 1-10
+examples/sample_project/pbt.yml
+  s_3f4e1c90c6ff1f::t_6d8a97b784ee1f 1-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3242c4dbf9dbb9fb110f36fad678cba009efdc90",
+  "prompts": {},
+  "humans": {
+    "h_98dc8200fc2119": {
+      "author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  },
+  "sessions": {
+    "s_3f4e1c90c6ff1f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "18e1931d-3c96-404e-a800-d642773895fe",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  }
+}
