@@ -1423,7 +1423,7 @@ public sealed class ModelComposer
         var valueLines = fieldParamDef.Values.Select((v, i) =>
         {
             var ordinal = v.Ordinal ?? i;
-            return $"    ({v.Expression}, \"{v.Name}\", {ordinal})";
+            return $"    (\"{v.Name}\", {v.Expression}, {ordinal})";
         });
         var daxExpression = "{\n" + string.Join(",\n", valueLines) + "\n}";
 
