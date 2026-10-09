@@ -1,0 +1,24 @@
+src/Pbt.Core/Services/ModelComposer.cs
+  s_031f08fc038c65::t_e3fa3024e8dd1a 1426
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "924313dbef9ebf6a9628172f313f2b54f0f5caa3",
+  "prompts": {},
+  "humans": {
+    "h_98dc8200fc2119": {
+      "author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  },
+  "sessions": {
+    "s_031f08fc038c65": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "117b1d46-01b6-4a37-95ad-a8337e803109",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  }
+}
