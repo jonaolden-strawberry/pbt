@@ -9,6 +9,18 @@ public sealed class TmdlTableImporter
 {
     private readonly YamlSerializer _serializer;
 
+    // Temp wrapper model for single-file imports; high so newer table features (e.g. format string definitions) deserialize
+    private const int TempCompatibilityLevel = 1702;
+
+    /// <summary>
+    /// Calculation group tables found by the last Extract* call. Calc groups are model-level
+    /// in YAML, so they are not returned as TableDefinitions.
+    /// </summary>
+    public List<CalculationGroupDefinition> CalculationGroups { get; } = new();
+
+    /// <summary>Field parameter tables found by the last Extract* call (reusable assets, like calculation groups).</summary>
+    public List<FieldParameterDefinition> FieldParameters { get; } = new();
+
     public TmdlTableImporter(YamlSerializer serializer)
     {
         _serializer = serializer;
@@ -20,6 +32,9 @@ public sealed class TmdlTableImporter
     /// </summary>
     public List<TableDefinition> ExtractTables(string tmdlPath, bool includeLineageTags = false)
     {
+        CalculationGroups.Clear();
+        FieldParameters.Clear();
+
         // Validate path
         if (!Directory.Exists(tmdlPath) && !File.Exists(tmdlPath))
         {
@@ -102,8 +117,9 @@ public sealed class TmdlTableImporter
         var tables = new List<TableDefinition>();
         foreach (var table in database.Model.Tables)
         {
-            var tableDef = TomConverter.ToTableDefinition(table, includeLineageTags);
-            tables.Add(tableDef);
+            var tableDef = Convert(table, includeLineageTags);
+            if (tableDef != null)
+                tables.Add(tableDef);
         }
 
         return tables;
@@ -160,7 +176,7 @@ public sealed class TmdlTableImporter
         }
 
         // If all tables failed, throw an error
-        if (tables.Count == 0)
+        if (tables.Count == 0 && CalculationGroups.Count == 0 && FieldParameters.Count == 0)
         {
             var errorDetails = string.Join("\n", failedTables.Select(f => $"  - {f.fileName}: {f.error}"));
             throw new InvalidOperationException(
@@ -198,7 +214,7 @@ public sealed class TmdlTableImporter
 
             // Create minimal database.tmdl with sanitized name
             var databaseTmdl = $@"database {sanitizedDbName}_temp
-	compatibilityLevel: 1600
+	compatibilityLevel: {TempCompatibilityLevel}
 
 ";
             File.WriteAllText(Path.Combine(tempDir, "database.tmdl"), databaseTmdl);
@@ -244,7 +260,7 @@ public sealed class TmdlTableImporter
 
             // Extract the table
             var table = database.Model.Tables[0];
-            return TomConverter.ToTableDefinition(table, includeLineageTags);
+            return Convert(table, includeLineageTags);
         }
         finally
         {
@@ -261,6 +277,18 @@ public sealed class TmdlTableImporter
                 }
             }
         }
+    }
+
+    private TableDefinition? Convert(Table table, bool includeLineageTags)
+    {
+        if (table.CalculationGroup != null)
+            CalculationGroups.Add(TomConverter.ToCalculationGroupDefinition(table));
+        else if (TomConverter.IsFieldParameter(table))
+            FieldParameters.Add(TomConverter.ToFieldParameterDefinition(table));
+        else
+            return TomConverter.ToTableDefinition(table, includeLineageTags);
+
+        return null;
     }
 
     /// <summary>

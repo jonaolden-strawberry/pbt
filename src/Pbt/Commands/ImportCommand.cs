@@ -98,6 +98,18 @@ public static class ImportCommand
         // Extract model using TomConverter
         Console.WriteLine($"\nExtracting model definition:");
         var modelDef = TomConverter.ToModelDefinition(database, includeLineageTags);
+        if (modelDef.CalculationGroups != null)
+        {
+            foreach (var group in modelDef.CalculationGroups)
+                Console.WriteLine($"  • calculation group {group.Name} -> {SaveAsset(serializer, group, group.Name, "calculation_groups", tablesPath)}");
+            modelDef.CalculationGroups = modelDef.CalculationGroups.Select(g => new CalculationGroupDefinition { Ref = g.Name }).ToList();
+        }
+        if (modelDef.FieldParameters != null)
+        {
+            foreach (var param in modelDef.FieldParameters)
+                Console.WriteLine($"  • field parameter {param.Name} -> {SaveAsset(serializer, param, param.Name, "field_parameters", tablesPath)}");
+            modelDef.FieldParameters = modelDef.FieldParameters.Select(f => new FieldParameterDefinition { Ref = f.Name }).ToList();
+        }
         var modelFileName = FileNameSanitizer.SanitizeToLower(database.Name) + "_model.yaml";
         serializer.SaveToFile(modelDef, Path.Combine(modelsPath, modelFileName));
         Console.WriteLine($"  • {database.Name} -> {modelFileName}");
@@ -179,7 +191,9 @@ public static class ImportCommand
 
         Console.WriteLine("Loading TMDL model...");
         var tables = importer.ExtractTables(tmdlPath, includeLineageTags);
-        Console.WriteLine($"Found {tables.Count} table(s)");
+        var calcGroups = importer.CalculationGroups;
+        var fieldParams = importer.FieldParameters;
+        Console.WriteLine($"Found {tables.Count} table(s), {calcGroups.Count} calculation group(s), {fieldParams.Count} field parameter(s)");
         Console.WriteLine();
 
         Console.WriteLine("Importing tables:");
@@ -193,9 +207,15 @@ public static class ImportCommand
             Console.WriteLine($"  ✓ {fileName} ({merged.Columns.Count} columns)");
         }
 
+        // Calc groups are reusable assets: calculation_groups/ next to the tables folder, referenced by `ref:` from a model
+        foreach (var group in calcGroups)
+            Console.WriteLine($"  ✓ {SaveAsset(serializer, group, group.Name, "calculation_groups", outputPath)} ({group.CalculationItems.Count} calculation items)");
+        foreach (var param in fieldParams)
+            Console.WriteLine($"  ✓ {SaveAsset(serializer, param, param.Name, "field_parameters", outputPath)} ({param.Values.Count} fields)");
+
         Console.WriteLine();
         Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine($"✓ Imported {tables.Count} table(s)");
+        Console.WriteLine($"✓ Imported {tables.Count} table(s), {calcGroups.Count} calculation group(s), {fieldParams.Count} field parameter(s)");
         Console.ResetColor();
 
         if (!includeLineageTags)
@@ -208,6 +228,16 @@ public static class ImportCommand
     #endregion
 
     #region Helpers
+
+    /// <summary>Write a reusable asset to the given folder beside the tables folder; returns the relative file name.</summary>
+    private static string SaveAsset<T>(YamlSerializer serializer, T asset, string name, string folder, string tablesPath)
+    {
+        var dir = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(tablesPath))!, folder);
+        Directory.CreateDirectory(dir);
+        var fileName = FileNameSanitizer.SanitizeToLower(name) + ".yaml";
+        serializer.SaveToFile(asset, Path.Combine(dir, fileName));
+        return Path.Combine(folder, fileName);
+    }
 
     private static bool IsTmdlPath(string path)
     {

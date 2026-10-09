@@ -12,6 +12,8 @@ public static class TomConverter
     // Annotations the composer adds itself; importing them would duplicate on rebuild
     private static readonly HashSet<string> ComposerAnnotations = new() { "__PBI_TimeIntelligenceEnabled", "PBI_ProTooling" };
 
+    private static string? NullIfEmpty(string? s) => string.IsNullOrEmpty(s) ? null : s;
+
     private static Dictionary<string, string>? ToDictionary<T>(IEnumerable<T> items, Func<T, string> name, Func<T, string?> value, Func<T, bool>? skip = null)
     {
         var d = items.Where(i => skip == null || !skip(i)).Where(i => value(i) != null).ToDictionary(name, i => value(i)!);
@@ -34,7 +36,7 @@ public static class TomConverter
         var tableDef = WithMetadata(new TableDefinition
         {
             Name = table.Name,
-            Description = table.Description,
+            Description = NullIfEmpty(table.Description),
             IsHidden = table.IsHidden,
             LineageTag = includeLineageTags ? table.LineageTag : null,
             DataCategory = string.IsNullOrEmpty(table.DataCategory) ? null : table.DataCategory,
@@ -67,8 +69,8 @@ public static class TomConverter
             var hierarchyDef = WithMetadata(new HierarchyDefinition
             {
                 Name = hierarchy.Name,
-                Description = hierarchy.Description,
-                DisplayFolder = hierarchy.DisplayFolder,
+                Description = NullIfEmpty(hierarchy.Description),
+                DisplayFolder = NullIfEmpty(hierarchy.DisplayFolder),
                 LineageTag = includeLineageTags ? hierarchy.LineageTag : null,
                 Levels = hierarchy.Levels.Select(l => new LevelDefinition { Name = l.Name, Column = l.Column.Name }).ToList()
             }, hierarchy.Annotations, hierarchy.ExtendedProperties);
@@ -118,10 +120,10 @@ public static class TomConverter
         {
             Name = column.Name,
             Type = column.DataType.ToString(),
-            Description = column.Description,
-            FormatString = column.FormatString,
+            Description = NullIfEmpty(column.Description),
+            FormatString = NullIfEmpty(column.FormatString),
             IsHidden = column.IsHidden,
-            DisplayFolder = column.DisplayFolder,
+            DisplayFolder = NullIfEmpty(column.DisplayFolder),
             LineageTag = includeLineageTags ? column.LineageTag : null,
             SortByColumn = column.SortByColumn?.Name,
             DataCategory = string.IsNullOrEmpty(column.DataCategory) ? null : column.DataCategory,
@@ -158,9 +160,9 @@ public static class TomConverter
             Name = measure.Name,
             Table = tableName,
             Expression = measure.Expression,
-            Description = measure.Description,
-            FormatString = measure.FormatString,
-            DisplayFolder = measure.DisplayFolder,
+            Description = NullIfEmpty(measure.Description),
+            FormatString = NullIfEmpty(measure.FormatString),
+            DisplayFolder = NullIfEmpty(measure.DisplayFolder),
             IsHidden = measure.IsHidden,
             LineageTag = includeLineageTags ? measure.LineageTag : null,
             FormatStringExpression = measure.FormatStringDefinition?.Expression,
@@ -171,7 +173,7 @@ public static class TomConverter
         {
             def.Kpi = new KpiDefinition
             {
-                Description = k.Description,
+                Description = NullIfEmpty(k.Description),
                 TargetExpression = k.TargetExpression,
                 TargetFormatString = k.TargetFormatString,
                 StatusExpression = k.StatusExpression,
@@ -193,7 +195,7 @@ public static class TomConverter
         var modelDef = WithMetadata(new ModelDefinition
         {
             Name = database.Name,
-            Description = model.Description,
+            Description = NullIfEmpty(model.Description),
             CompatibilityLevel = database.CompatibilityLevel,
             Culture = model.Culture,
             SourceQueryCulture = model.SourceQueryCulture,
@@ -208,6 +210,8 @@ public static class TomConverter
         {
             if (table.CalculationGroup != null)
                 (modelDef.CalculationGroups ??= new()).Add(ToCalculationGroupDefinition(table));
+            else if (IsFieldParameter(table))
+                (modelDef.FieldParameters ??= new()).Add(ToFieldParameterDefinition(table));
             else
                 modelDef.Tables.Add(new TableReference { Ref = table.Name });
         }
@@ -270,13 +274,13 @@ public static class TomConverter
         return modelDef;
     }
 
-    private static CalculationGroupDefinition ToCalculationGroupDefinition(Table table)
+    public static CalculationGroupDefinition ToCalculationGroupDefinition(Table table)
     {
         var group = table.CalculationGroup;
         return new CalculationGroupDefinition
         {
             Name = table.Name,
-            Description = table.Description,
+            Description = NullIfEmpty(table.Description),
             Precedence = group.Precedence,
             NoSelectionExpression = group.NoSelectionExpression?.Expression,
             MultipleOrEmptySelectionExpression = group.MultipleOrEmptySelectionExpression?.Expression,
@@ -290,6 +294,48 @@ public static class TomConverter
                 Description = string.IsNullOrEmpty(i.Description) ? null : i.Description
             }).ToList()
         };
+    }
+
+    public static bool IsFieldParameter(Table table) =>
+        table.Annotations.ContainsName("ParameterMetadata") && table.Partitions.Any(p => p.Source is CalculatedPartitionSource);
+
+    /// <summary>
+    /// Convert a field parameter table: partition DAX is { (label, field, order), ... }.
+    /// The quoted string is the label and the other non-numeric element the field reference,
+    /// so both Power BI's ("Label", NAMEOF(...), 0) and pbt's (field, "Label", 0) parse.
+    /// </summary>
+    public static FieldParameterDefinition ToFieldParameterDefinition(Table table)
+    {
+        var dax = table.Partitions.Select(p => p.Source).OfType<CalculatedPartitionSource>().First().Expression ?? "";
+        var def = new FieldParameterDefinition { Name = table.Name, Description = NullIfEmpty(table.Description) };
+        foreach (var tuple in SplitTopLevel(dax.Trim().TrimStart('{').TrimEnd('}'), ',', unwrapParens: true))
+        {
+            var parts = SplitTopLevel(tuple, ',', unwrapParens: false).Select(x => x.Trim()).ToList();
+            if (parts.Count < 2) continue;
+            var label = parts.FirstOrDefault(x => x.StartsWith('"') && x.EndsWith('"') && x.Length >= 2) ?? parts[0];
+            var field = parts.First(x => x != label);
+            var ordinal = parts.Count > 2 && int.TryParse(parts[^1], out var o) ? o : (int?)null;
+            def.Values.Add(new FieldParameterValue { Name = label.Trim('"'), Expression = field, Ordinal = ordinal });
+        }
+        return def;
+    }
+
+    // Splits on `sep` at paren/brace depth 0, ignoring quoted text. unwrapParens: return the contents of each (...) group instead.
+    private static List<string> SplitTopLevel(string text, char sep, bool unwrapParens)
+    {
+        var result = new List<string>();
+        int depth = 0, start = 0; var quoted = false;
+        for (int i = 0; i < text.Length; i++)
+        {
+            var c = text[i];
+            if (c == '"') quoted = !quoted;
+            if (quoted) continue;
+            if (c is '(' or '{' or '[') { if (depth++ == 0 && unwrapParens) start = i + 1; }
+            else if (c is ')' or '}' or ']') { if (--depth == 0 && unwrapParens) { result.Add(text[start..i]); start = i + 1; } }
+            else if (c == sep && depth == 0 && !unwrapParens) { result.Add(text[start..i]); start = i + 1; }
+        }
+        if (!unwrapParens && start <= text.Length) result.Add(text[start..]);
+        return result;
     }
 
     private static DataSourceDefinition ToDataSourceDefinition(DataSource ds)

@@ -7,6 +7,12 @@ namespace Pbt.Core.Models;
 public class FieldParameterDefinition
 {
     /// <summary>
+    /// Name of a reusable definition in the field_parameters/ asset folder.
+    /// When set in a model, the definition is loaded from that file instead of inline fields.
+    /// </summary>
+    public string? Ref { get; set; }
+
+    /// <summary>
     /// Field parameter name
     /// </summary>
     public string Name { get; set; } = string.Empty;

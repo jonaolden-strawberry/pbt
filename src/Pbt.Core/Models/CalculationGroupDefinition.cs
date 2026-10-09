@@ -8,6 +8,12 @@ namespace Pbt.Core.Models;
 public class CalculationGroupDefinition
 {
     /// <summary>
+    /// Name of a reusable definition in the calculation_groups/ asset folder.
+    /// When set in a model, the definition is loaded from that file instead of inline fields.
+    /// </summary>
+    public string? Ref { get; set; }
+
+    /// <summary>
     /// Calculation group name
     /// </summary>
     public string Name { get; set; } = string.Empty;

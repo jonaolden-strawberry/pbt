@@ -155,6 +155,8 @@ public sealed class AssetLoader
             }
         }
 
+        ExpandReferences(model, resolved, projectPath);
+
         // Resolve build configuration from model
         if (model.Builds != null)
         {
@@ -163,6 +165,48 @@ public sealed class AssetLoader
         }
 
         return resolved;
+    }
+
+    /// <summary>
+    /// Replace `ref:` entries in calculation_groups / field_parameters with the reusable
+    /// definitions found in calculation_groups/ and field_parameters/ folders next to each tables/ folder
+    /// (or the project root when using the convention layout). Earlier folders win.
+    /// </summary>
+    private void ExpandReferences(ModelDefinition model, ResolvedAssetPaths paths, string projectPath)
+    {
+        var bases = paths.TablePaths.Select(p => Path.GetDirectoryName(Path.GetFullPath(p))!)
+            .Append(projectPath).Distinct().ToList();
+
+        Dictionary<string, T> Load<T>(string folder, Func<T, string> name)
+        {
+            var found = new Dictionary<string, T>(StringComparer.OrdinalIgnoreCase);
+            foreach (var dir in bases.Select(b => Path.Combine(b, folder)).Where(Directory.Exists))
+                foreach (var file in Directory.GetFiles(dir, "*.yaml").Concat(Directory.GetFiles(dir, "*.yml")).Order())
+                {
+                    T def;
+                    try { def = _serializer.LoadFromFile<T>(file); }
+                    catch (Exception ex) { throw new InvalidOperationException($"Failed to load {file}: {ex.Message}", ex); }
+                    found.TryAdd(name(def), def);
+                }
+            return found;
+        }
+
+        List<T>? Expand<T>(List<T>? items, string folder, Func<T, string?> getRef, Func<T, string> name)
+        {
+            if (items == null || !items.Any(i => getRef(i) != null)) return items;
+            var library = Load(folder, name);
+            return items.Select(i =>
+            {
+                var r = getRef(i);
+                if (r == null) return i;
+                return library.TryGetValue(r, out var def)
+                    ? def
+                    : throw new InvalidOperationException($"'{r}' not found in {folder}/ (searched: {string.Join(", ", bases)})");
+            }).ToList();
+        }
+
+        model.CalculationGroups = Expand(model.CalculationGroups, "calculation_groups", g => g.Ref, g => g.Name);
+        model.FieldParameters = Expand(model.FieldParameters, "field_parameters", f => f.Ref, f => f.Name);
     }
 
     /// <summary>
