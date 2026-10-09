@@ -1,0 +1,46 @@
+src/Pbt.Core/Models/CalculationGroupDefinition.cs
+  s_031f08fc038c65::t_3149b501aab251 11-15
+  s_031f08fc038c65::t_223232ffead342 10
+src/Pbt.Core/Services/AssetLoader.cs
+  s_031f08fc038c65::t_97120212b986bd 184,194,208-209
+  s_031f08fc038c65::t_3149b501aab251 158-159,170-183,185-193,195-207
+  s_031f08fc038c65::t_21af45a293ec93 210-211
+tests/Pbt.Core.Tests/AssetReferenceTests.cs
+  s_031f08fc038c65::t_d0418a9fb6ec9a 1-39
+src/Pbt.Core/Models/FieldParameterDefinition.cs
+  s_031f08fc038c65::t_3149b501aab251 10-15
+src/Pbt.Core/Services/TmdlTableImporter.cs
+  s_031f08fc038c65::t_855962ea02b8ee 21-23,36,179,284-288
+  s_031f08fc038c65::t_fa636ce0ced688 12-20,35,37,120-122,217,263,282-283,289-291
+  s_031f08fc038c65::t_a3ae0f353822b6 292-293
+src/Pbt.Core/Services/TomConverter.cs
+  s_031f08fc038c65::t_fa636ce0ced688 277
+  s_031f08fc038c65::t_855962ea02b8ee 213-214,299-339
+  s_031f08fc038c65::t_bc35b0ab799821 15-16,39,72-73,123-124,126,163-165,176,198,283,340
+src/Pbt/Commands/ImportCommand.cs
+  s_031f08fc038c65::t_97120212b986bd 101-103,105-106,210,234,236,240
+  s_031f08fc038c65::t_855962ea02b8ee 104,107-112,195-196,212-214,218,232-233,235,237-239
+  s_031f08fc038c65::t_a6ee6cc6f4041a 194,211,215
+  s_031f08fc038c65::t_df7a5122c22875 241
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "26876b018228f7c0cf484ea2197ae967d40dee6c",
+  "prompts": {},
+  "humans": {
+    "h_98dc8200fc2119": {
+      "author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  },
+  "sessions": {
+    "s_031f08fc038c65": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "117b1d46-01b6-4a37-95ad-a8337e803109",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "jonaolden-strawberry <jonatan.oldenburg@strawberry.se>"
+    }
+  }
+}
